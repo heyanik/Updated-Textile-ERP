@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getGasUrl, setGasUrl, gas } from "@/lib/gas";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { isUnlocked } from "@/lib/license";
+
+// 1. Define your hardcoded setup page password here
+const SETUP_PASSWORD = "thisisjustthebeginning"; // Change this to a strong password in production
 
 export const Route = createFileRoute("/setup")({
   beforeLoad: () => {
@@ -19,6 +22,10 @@ export const Route = createFileRoute("/setup")({
 });
 
 function Setup() {
+  // 2. State to track if the current visit has been authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+
   const [url, setUrl] = useState(getGasUrl() ?? "");
   const [testing, setTesting] = useState(false);
   const navigate = useNavigate();
@@ -39,9 +46,22 @@ function Setup() {
     }
   }
 
+  // Only trigger backend load once they pass the password screen
   useEffect(() => {
-    if (connected) loadUsers();
-  }, [connected]);
+    if (connected && isAuthenticated) loadUsers();
+  }, [connected, isAuthenticated]);
+
+  // 3. Handle password form submission
+  function handlePasswordSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (passwordInput === SETUP_PASSWORD) {
+      setIsAuthenticated(true);
+      toast.success("Access granted");
+    } else {
+      toast.error("Incorrect setup password!");
+      setPasswordInput("");
+    }
+  }
 
   async function addUser() {
     if (!newU.username || !newU.password) return;
@@ -87,6 +107,39 @@ function Setup() {
     }
   }
 
+  // 4. If not authenticated, render the password protection gate interface instead
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Restricted Area</CardTitle>
+            <CardDescription> Please enter the system password to access the setup dashboard.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="setup-password">Password</Label>
+                <Input
+                  id="setup-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Verify Access
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // 5. Normal setup page content goes here once authenticated
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-3xl mx-auto px-6 py-12 space-y-8">

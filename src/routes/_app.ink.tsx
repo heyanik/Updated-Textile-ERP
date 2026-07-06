@@ -26,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileSpreadsheet, FileText, Trash2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { COMPANY_NAME, autoTable, drawWatermark, loadLogoDataUrl, newDoc } from "@/lib/pdf";
+import { downloadBlob } from "@/lib/download";
 import { toast } from "sonner";
 import { optimisticAppend, optimisticRemove, tempId } from "@/lib/optimistic";
 import {
@@ -309,7 +310,11 @@ function InkPage() {
       ]);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, title);
-      XLSX.writeFile(workbook, `${fileNameBase}.xlsx`);
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+      const excelBlob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      downloadBlob(`${fileNameBase}.xlsx`, excelBlob);
       return;
     }
 
@@ -344,7 +349,8 @@ function InkPage() {
       styles: { fontSize: 9, cellPadding: 6 },
     });
 
-    doc.save(`${fileNameBase}.pdf`);
+    const pdfBlob = doc.output("blob");
+    downloadBlob(`${fileNameBase}.pdf`, pdfBlob);
   }
 
   return (

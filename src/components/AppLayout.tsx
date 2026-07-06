@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { clearSession, getSession } from "@/lib/auth";
 import { useEffect, useState } from "react";
+import logoUrl from "@/assets/logo.png";
 import { needsRenewal, tryUnlock, nextMonth, daysLeftInMonth } from "@/lib/license";
 import {
   Dialog,
@@ -69,8 +70,17 @@ export function AppLayout() {
     <div className="min-h-screen bg-background text-foreground flex">
       <aside className="w-60 border-r bg-card flex flex-col">
         <div className="px-5 py-5 border-b">
-          <div className="text-lg font-semibold tracking-tight">Textile ERP</div>
-          <div className="text-xs text-muted-foreground">Operations Console</div>
+          <div className="flex items-center gap-3">
+            <img
+              src={logoUrl}
+              alt="Company logo"
+              className="h-9 w-9 rounded-md border bg-white/80 object-contain p-1"
+            />
+            <div>
+              <div className="text-lg font-semibold tracking-tight">Textile ERP</div>
+              <div className="text-xs text-muted-foreground">Operations Console</div>
+            </div>
+          </div>
         </div>
         <nav className="flex-1 p-3 space-y-1">
           {nav.map((item) => {
@@ -138,7 +148,7 @@ export function AppLayout() {
         onClick={(e) => e.preventDefault()}
         className="fixed bottom-3 right-3 z-50 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium shadow-md hover:shadow-lg transition"
       >
-        Built By Anik
+        Build By Anik
       </a>
       <Dialog open={renewOpen} onOpenChange={setRenewOpen}>
         <DialogContent>

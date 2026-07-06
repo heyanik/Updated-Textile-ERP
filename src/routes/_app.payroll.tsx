@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { COMPANY_NAME, autoTable, loadLogoDataUrl, newDoc } from "@/lib/pdf";
+import { downloadBlob } from "@/lib/download";
 import * as XLSX from "xlsx";
 
 export const Route = createFileRoute("/_app/payroll")({
@@ -114,7 +115,8 @@ function PayrollPage() {
       headStyles: { fillColor: [30, 41, 59] },
       columnStyles: { 7: { cellWidth: 100 } },
     });
-    doc.save(`Payroll-${monthYear}.pdf`);
+    const pdfBlob = doc.output("blob");
+    downloadBlob(`Payroll-${monthYear}.pdf`, pdfBlob);
   }
 
   function exportExcel() {
@@ -131,7 +133,11 @@ function PayrollPage() {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Payroll");
-    XLSX.writeFile(wb, `Payroll-${monthYear}.xlsx`);
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const excelBlob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    downloadBlob(`Payroll-${monthYear}.xlsx`, excelBlob);
   }
 
   const totalGross = rows.reduce((s, r) => s + Number(r.gross_salary || 0), 0);

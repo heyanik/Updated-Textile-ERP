@@ -43,12 +43,12 @@ function Dashboard() {
         {
           icon: Droplet,
           label: "Ink Used (This Month)",
-          value: `${data.ink_used_month_ml.toLocaleString()} ml`,
+          value: `${data.ink_used_month_ml.toLocaleString()} l`,
         },
         {
           icon: FlaskConical,
           label: "Ink Remaining",
-          value: `${data.ink_remaining_ml.toLocaleString()} ml`,
+          value: `${data.ink_remaining_ml.toLocaleString()} l`,
         },
       ]
     : [];

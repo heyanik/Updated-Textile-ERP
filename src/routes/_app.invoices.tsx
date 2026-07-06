@@ -32,6 +32,7 @@ import {
 import { Plus, Printer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { COMPANY_NAME, autoTable, drawWatermark, loadLogoDataUrl, newDoc } from "@/lib/pdf";
+import { downloadBlob } from "@/lib/download";
 import { optimisticAppend, optimisticRemove, tempId } from "@/lib/optimistic";
 
 export const Route = createFileRoute("/_app/invoices")({
@@ -197,7 +198,8 @@ function InvoicesPage() {
     doc.text("Client Signature", 60, sigY + 16);
     doc.text("Manager Signature", 340, sigY + 16);
 
-    doc.save(`Invoice-${inv.invoice_id}.pdf`);
+    const pdfBlob = doc.output("blob");
+    downloadBlob(`Invoice-${inv.invoice_id}.pdf`, pdfBlob);
   }
 
   return (

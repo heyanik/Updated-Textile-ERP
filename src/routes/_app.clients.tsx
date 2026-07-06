@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Building2, Printer, FileSpreadsheet } from "lucide-react";
 import { COMPANY_NAME, autoTable, drawWatermark, loadLogoDataUrl, newDoc } from "@/lib/pdf";
+import { downloadBlob } from "@/lib/download";
 import * as XLSX from "xlsx";
 
 export const Route = createFileRoute("/_app/clients")({
@@ -110,7 +111,8 @@ function ClientsPage() {
     doc.text("Client Signature", 60, sigY + 16);
     doc.text("Manager Signature", 340, sigY + 16);
 
-    doc.save(`Fabric-Status-${s.client_name}.pdf`);
+    const pdfBlob = doc.output("blob");
+    downloadBlob(`Fabric-Status-${s.client_name}.pdf`, pdfBlob);
   }
 
   function exportExcel(s: ClientSummary) {
@@ -133,7 +135,11 @@ function ClientsPage() {
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, s.client_name.slice(0, 28) || "Client");
-    XLSX.writeFile(wb, `Fabric-Status-${s.client_name}.xlsx`);
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const excelBlob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    downloadBlob(`Fabric-Status-${s.client_name}.xlsx`, excelBlob);
   }
 
   return (

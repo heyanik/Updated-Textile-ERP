@@ -28,3 +28,4 @@ A TanStack + React ERP app ready to deploy on Vercel.
 
 - The app uses Google Apps Script as its backend. After the Vercel deployment is live, open the app and configure the Apps Script URL in the Setup page.
 - For the first deployment, the project already includes the Vercel-ready Nitro preset in `vite.config.ts`.
+- To package the app as a desktop app with your company logo as the icon, run `npm run package:desktop` after starting the dev server or pointing the build to a reachable URL.

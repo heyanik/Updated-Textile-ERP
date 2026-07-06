@@ -199,7 +199,7 @@ function InvoicesPage() {
     doc.text("Manager Signature", 340, sigY + 16);
 
     const pdfBlob = doc.output("blob");
-    downloadBlob(`Invoice-${inv.invoice_id}.pdf`, pdfBlob);
+    await downloadBlob(`Invoice-${inv.invoice_id}.pdf`, pdfBlob);
   }
 
   return (

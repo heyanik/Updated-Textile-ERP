@@ -39,6 +39,32 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/api/download") {
+      try {
+        const form = await request.formData();
+        const filename = String(form.get("filename") || "download").replace(/[^a-zA-Z0-9._-]/g, "_");
+        const mimeType = String(form.get("mimeType") || "application/octet-stream");
+        const content = String(form.get("content") || "");
+        const bytes = Buffer.from(content, "base64");
+
+        return new Response(bytes, {
+          status: 200,
+          headers: {
+            "content-type": mimeType,
+            "content-disposition": `attachment; filename="${filename}"`,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+        return new Response("Unable to generate download", {
+          status: 500,
+          headers: { "content-type": "text/plain; charset=utf-8" },
+        });
+      }
+    }
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

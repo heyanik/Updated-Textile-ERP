@@ -1,27 +1,35 @@
-export function downloadBlob(filename: string, blob: Blob) {
+export async function downloadBlob(filename: string, blob: Blob) {
   if (typeof window === "undefined" || typeof document === "undefined") return;
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.rel = "noopener";
-  link.style.display = "none";
-
-  document.body.appendChild(link);
-
-  try {
-    if (typeof navigator !== "undefined" && "msSaveBlob" in navigator) {
-      const msSaveBlob = (navigator as Navigator & { msSaveBlob?: (blob: Blob, filename: string) => void }).msSaveBlob;
-      if (msSaveBlob) {
-        msSaveBlob(blob, filename);
-        return;
-      }
-    }
-
-    link.click();
-  } finally {
-    document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+  const mimeType = blob.type || "application/octet-stream";
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
   }
+  const payload = btoa(binary);
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "/api/download";
+  form.style.display = "none";
+
+  const filenameInput = document.createElement("input");
+  filenameInput.name = "filename";
+  filenameInput.value = filename;
+  form.appendChild(filenameInput);
+
+  const mimeTypeInput = document.createElement("input");
+  mimeTypeInput.name = "mimeType";
+  mimeTypeInput.value = mimeType;
+  form.appendChild(mimeTypeInput);
+
+  const contentInput = document.createElement("input");
+  contentInput.name = "content";
+  contentInput.value = payload;
+  form.appendChild(contentInput);
+
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
 }

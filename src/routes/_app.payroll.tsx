@@ -116,10 +116,10 @@ function PayrollPage() {
       columnStyles: { 7: { cellWidth: 100 } },
     });
     const pdfBlob = doc.output("blob");
-    downloadBlob(`Payroll-${monthYear}.pdf`, pdfBlob);
+    await downloadBlob(`Payroll-${monthYear}.pdf`, pdfBlob);
   }
 
-  function exportExcel() {
+  async function exportExcel() {
     const data = rows.map((r) => ({
       ID: r.emp_id,
       Name: r.name,
@@ -137,7 +137,7 @@ function PayrollPage() {
     const excelBlob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    downloadBlob(`Payroll-${monthYear}.xlsx`, excelBlob);
+    await downloadBlob(`Payroll-${monthYear}.xlsx`, excelBlob);
   }
 
   const totalGross = rows.reduce((s, r) => s + Number(r.gross_salary || 0), 0);

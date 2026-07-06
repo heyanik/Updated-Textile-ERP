@@ -112,10 +112,10 @@ function ClientsPage() {
     doc.text("Manager Signature", 340, sigY + 16);
 
     const pdfBlob = doc.output("blob");
-    downloadBlob(`Fabric-Status-${s.client_name}.pdf`, pdfBlob);
+    await downloadBlob(`Fabric-Status-${s.client_name}.pdf`, pdfBlob);
   }
 
-  function exportExcel(s: ClientSummary) {
+  async function exportExcel(s: ClientSummary) {
     const rows = s.fabrics.map((f) => ({
       "Fabric ID": f.fabric_id,
       Type: f.fabric_type,
@@ -139,7 +139,7 @@ function ClientsPage() {
     const excelBlob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    downloadBlob(`Fabric-Status-${s.client_name}.xlsx`, excelBlob);
+    await downloadBlob(`Fabric-Status-${s.client_name}.xlsx`, excelBlob);
   }
 
   return (

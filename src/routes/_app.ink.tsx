@@ -314,7 +314,7 @@ function InkPage() {
       const excelBlob = new Blob([excelBuffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-      downloadBlob(`${fileNameBase}.xlsx`, excelBlob);
+      await downloadBlob(`${fileNameBase}.xlsx`, excelBlob);
       return;
     }
 
@@ -350,7 +350,7 @@ function InkPage() {
     });
 
     const pdfBlob = doc.output("blob");
-    downloadBlob(`${fileNameBase}.pdf`, pdfBlob);
+    await downloadBlob(`${fileNameBase}.pdf`, pdfBlob);
   }
 
   return (
